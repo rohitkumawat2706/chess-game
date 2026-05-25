@@ -46,8 +46,29 @@ io.on("connection",function(uniquesocket){
         }
 
          // Optional: reset game when someone leaves
-        chess.reset();
-        io.emit("boardState", chess.fen());
+        // chess.reset();
+        // io.emit("boardState", chess.fen());
+
+        // Reset ONLY when actual players leave.
+        uniquesocket.on("disconnect", function () {
+
+            let playerLeft = false;
+
+            if (uniquesocket.id === players.white) {
+                delete players.white;
+                playerLeft = true;
+            }
+            else if (uniquesocket.id === players.black) {
+                delete players.black;
+                playerLeft = true;
+            }
+
+            // Reset only if actual player left
+            if (playerLeft) {
+                chess.reset();
+                io.emit("boardState", chess.fen());
+            }
+        });
     });
 
     uniquesocket.on("move",(move)=>{
