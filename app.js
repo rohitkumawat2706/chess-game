@@ -37,39 +37,65 @@ io.on("connection",function(uniquesocket){
 
     uniquesocket.emit("boardState", chess.fen());
 
-    uniquesocket.on("disconnect",function(){
-        if(uniquesocket.id == players.white){
-            delete players.white;
-        }
-        else if(uniquesocket.id==players.black){
-            delete players.black;
-        }
+    // uniquesocket.on("disconnect",function(){
+    //     if(uniquesocket.id == players.white){
+    //         delete players.white;
+    //     }
+    //     else if(uniquesocket.id==players.black){
+    //         delete players.black;
+    //     }
 
-         // Optional: reset game when someone leaves
-        // chess.reset();
-        // io.emit("boardState", chess.fen());
+    //      // Optional: reset game when someone leaves
+    //     // chess.reset();
+    //     // io.emit("boardState", chess.fen());
 
-        // Reset ONLY when actual players leave.
-        uniquesocket.on("disconnect", function () {
+    //     // Reset ONLY when actual players leave.
+    //     uniquesocket.on("disconnect", function () {
 
-            let playerLeft = false;
+    //         let playerLeft = false;
 
-            if (uniquesocket.id === players.white) {
-                delete players.white;
-                playerLeft = true;
-            }
-            else if (uniquesocket.id === players.black) {
-                delete players.black;
-                playerLeft = true;
-            }
+    //         if (uniquesocket.id === players.white) {
+    //             delete players.white;
+    //             playerLeft = true;
+    //         }
+    //         else if (uniquesocket.id === players.black) {
+    //             delete players.black;
+    //             playerLeft = true;
+    //         }
 
-            // Reset only if actual player left
-            if (playerLeft) {
-                chess.reset();
-                io.emit("boardState", chess.fen());
-            }
-        });
-    });
+    //         // Reset only if actual player left
+    //         if (playerLeft) {
+    //             chess.reset();
+    //             io.emit("boardState", chess.fen());
+    //         }
+    //     });
+    // });
+
+    // ✅ Spectator leaves → game continues
+    // ✅ White leaves → reset
+    // ✅ Black leaves → reset
+
+    uniquesocket.on("disconnect", function () {
+
+    let playerLeft = false;
+
+    if (uniquesocket.id === players.white) {
+        delete players.white;
+        playerLeft = true;
+    }
+    else if (uniquesocket.id === players.black) {
+        delete players.black;
+        playerLeft = true;
+    }
+
+    // Reset game ONLY if player leaves
+    if (playerLeft) {
+        chess.reset();
+        io.emit("boardState", chess.fen());
+    }
+
+    console.log("Disconnected:", uniquesocket.id);
+});
 
     uniquesocket.on("move",(move)=>{
         try{
