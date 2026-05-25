@@ -28,7 +28,25 @@ const renderBoard = ()=>{
                     square.color === "w" ? "white" : "black"
                 );
                 pieceElement.innerText = getPieceUnicode(square); 
-                pieceElement.draggable = playerRole === square.color;
+                // pieceElement.draggable = playerRole === square.color;
+                pieceElement.draggable = true;
+                pieceElement.addEventListener("click", () => {
+                    if (playerRole !== square.color) return;
+
+                        if (!sourceSquare) {
+                            sourceSquare = {
+                            row: rowindex,
+                            col: squareindex
+                        };
+                    } else {
+                        handleMove(sourceSquare, {
+                        row: rowindex,
+                        col: squareindex
+                    });
+
+                sourceSquare = null;
+            }
+});
 
                 pieceElement.addEventListener("dragstart", (e)=>{
                     if(pieceElement.draggable){
